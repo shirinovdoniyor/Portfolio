@@ -69,7 +69,7 @@ bindForm('reviewForm','reviews',()=>loadReviews(version));
 async function loadArticles(version){
 const list=document.getElementById('articleList');if(!list)return;
 try{
-const response=await fetch('/api/articles/?lang='+encodeURIComponent(lang),{credentials:'same-origin'});
+const response=await fetch('/api/articles/?lang='+encodeURIComponent(lang),{credentials:'same-origin',cache:'no-store'});
 if(!response.ok)throw Error();const data=await response.json();if(version!==renderVersion)return;
 const detail=location.hash.match(/^#article-(\d+)$/);
 function show(query=''){
@@ -95,3 +95,8 @@ try{const result=await api('session');account=result.user;sessionReady=true;rend
 catch(error){sessionReady=false;render();if(location.hash==='#profile'){main.innerHTML='<section class="wrap page"><h1>'+ct().profile+'</h1><div class="empty">'+ct().errors.network+' <button class="button" id="retrySession">'+ct().retry+'</button></div></section>';document.getElementById('retrySession').onclick=bootstrap}else{const area=document.getElementById('reviewsList');if(area)area.innerHTML='<div class="empty">'+ct().errors.network+' <button class="button" id="retrySession">'+ct().retry+'</button></div>';document.getElementById('retrySession')?.addEventListener('click',bootstrap)}}
 }
 render();bootstrap();
+
+// Refresh articles when returning from the admin tab.
+window.addEventListener('focus', () => {
+  if (location.hash === '#articles' || /^#article-\d+$/.test(location.hash)) render();
+});

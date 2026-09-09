@@ -18,7 +18,7 @@ class Article(models.Model):
     title = models.CharField(max_length=200)
     language = models.CharField(max_length=2, choices=[("uz","O‘zbek"),("ru","Русский"),("en","English")], default="uz")
     body = models.TextField()
-    published = models.BooleanField(default=False)
+    published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         ordering = ["-created_at"]

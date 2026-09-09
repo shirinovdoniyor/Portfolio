@@ -63,3 +63,38 @@ class PortfolioTests(TestCase):
         self.register()
         self.assertEqual(self.register().status_code,400)
         self.assertEqual(self.post("articles", {"title":"Forbidden"}).status_code,405)
+
+
+class ArticleAdminTests(TestCase):
+    def setUp(self):
+        self.client.force_login(User.objects.create_superuser(
+            username="editor", email="editor@example.com", password="test-password"
+        ))
+
+    def test_new_article_is_published_without_checkbox(self):
+        response = self.client.get("/admin/portfolio/article/add/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("published", response.context["adminform"].form.fields)
+        response = self.client.post("/admin/portfolio/article/add/", {
+            "title": "Admin article", "body": "Public text", "language": "uz",
+            "_save": "Save",
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Article.objects.get(title="Admin article").published)
+        items = Client().get("/api/articles/?lang=uz").json()["items"]
+        self.assertEqual([item["title"] for item in items], ["Admin article"])
+
+    def test_existing_article_can_be_hidden_and_published(self):
+        article = Article.objects.create(title="Article", body="Text", published=True)
+        url = f"/admin/portfolio/article/{article.pk}/change/"
+        self.client.post(url, {
+            "title": article.title, "body": article.body, "language": "uz", "_save": "Save",
+        })
+        article.refresh_from_db()
+        self.assertFalse(article.published)
+        self.assertEqual(Client().get("/api/articles/").json()["items"], [])
+        self.client.post(url, {
+            "title": article.title, "body": article.body, "language": "uz",
+            "published": "on", "_save": "Save",
+        })
+        self.assertEqual(len(Client().get("/api/articles/").json()["items"]), 1)

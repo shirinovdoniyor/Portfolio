@@ -16,7 +16,7 @@ Profil va sharhlar ishlashi uchun saytni shu manzildan oching. index.html faylin
 py manage.py createsuperuser
 ```
 http://127.0.0.1:8000/admin/ sahifasiga o‘zingiz yaratgan admin hisob bilan kiring.
-Articles → Add orqali sarlavha, til va oddiy matn kiriting. Published belgisi bilan e’lon qiling.
+Articles -> Add orqali sarlavha, til va matn kiriting. Save bosilganda yangi maqola avtomatik e’lon qilinadi. Mavjud maqolani yashirish uchun Published belgisini olib tashlab saqlang.
 UZ/RU/EN maqolalar alohida yozuvlar sifatida kiritiladi. Oddiy tashrifchilar maqola qo‘sha olmaydi.
 Reviews bo‘limida sharhlarni yashirish (Visible belgisini olib tashlash) yoki o‘chirish mumkin.
 

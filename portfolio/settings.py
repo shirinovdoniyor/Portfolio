@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env", override=False, encoding="utf-8-sig")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1").lower() in {"1", "true", "yes"}
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "local-development-only-doniyor-portfolio")
 if not DEBUG and SECRET_KEY == "local-development-only-doniyor-portfolio":
