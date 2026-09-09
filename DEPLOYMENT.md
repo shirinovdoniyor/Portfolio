@@ -97,3 +97,26 @@ node --check assets/community.js
 ## Hozirgi yakuniy holat
 
 Fayllar Render deployiga tayyorlandi, lekin GitHub remote va Render akkaunt sessiyasi bo‘lmagani uchun bu muhitdan to‘g‘ridan-to‘g‘ri deploy qilinmadi. GitHub repository URL’i, doimiy PostgreSQL `DATABASE_URL` va Render hostname panel orqali kiritilgach, yuqoridagi qadamlar bilan deploy yakunlanadi. Deploy URL’i faqat Render servis yaratilgandan keyin ma’lum bo‘ladi.
+
+
+## Render API: no such table
+
+If `/api/reviews/` or `/api/articles/` returns `no such table`, database
+migrations have not been applied to the running service's database.
+`gunicorn.conf.py` runs `python manage.py migrate --no-input` in the master
+process before any workers start. Gunicorn automatically loads this file
+from the repository root, including with the existing start command:
+
+```bash
+gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT
+```
+
+Use `bash build.sh` as the Build Command. It installs dependencies, collects
+static files, and applies migrations during the build as well. A migration
+failure stops startup instead of serving a site with broken database APIs.
+
+Migrations create the schema; they do not recover lost records. Render's
+local SQLite files are ephemeral. Configure a persistent PostgreSQL
+`DATABASE_URL`, `DJANGO_SECRET_KEY`, and `DJANGO_DEBUG=0` for production.
+Check `/api/reviews/` and `/api/articles/` after deploying: both should return
+HTTP 200 with an `items` array (which may be empty).
